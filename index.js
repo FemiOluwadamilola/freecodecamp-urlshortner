@@ -60,7 +60,7 @@ app.post("/api/shorturl", (req, res) => {
       if (err) throw err.message;
 
       if (!addresses) {
-        res.json({ error_msg: "Invalid URl" });
+        res.json({ error: "invalid url" });
       } else {
         let shortUrl = Math.floor(Math.random() * 100000);
         const newUrl = new Url({
