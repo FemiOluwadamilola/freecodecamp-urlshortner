@@ -31,23 +31,44 @@ app.get("/", (req, res) => {
 });
 
 // Your first API endpoint
+// app.post("/api/shorturl", (req, res) => {
+//   const bodyurl = req.body.url;
+//   const checkaddress = dns.lookup(
+//     urlparser.parse(bodyurl).host,
+//     async (err, address) => {
+//       if (!address) {
+//         res.json({ error: "invalid url" });
+//       } else {
+//         let shortUrl = Math.floor(Math.random() * 100000);
+//         const url = new Url({ url: bodyurl, shorturl: shortUrl });
+//         const data = url.save();
+//         // res.json({ original_url: data.url, short_url: data.shorturl });
+//         // console.log({ original_url: data.url, short_url: data.shorturl })
+//         console.log(data);
+//       }
+//     }
+//   );
+// });
+
 app.post("/api/shorturl", (req, res) => {
-  console.log(req.body);
-  const bodyurl = req.body.url;
-  const checkaddress = dns.lookup(
-    urlparser.parse(bodyurl).hostname,
-    (err, address) => {
-      if (!address) {
-        res.json({ error: "invalid url" });
-      } else {
-        let shortUrl = Math.floor(Math.random() * 100000);
-        console.log(shortUrl);
-        const url = new Url({ url: bodyurl, shorturl: shortUrl });
-        const data = url.save();
-        res.json({ original_url: data.url, short_url: data.shorturl });
-      }
+  const urlParser = req.body.url;
+  const host = urlParser.replace(/http[s]?\:\/\//, "").replace(/\/(.+)?/, "");
+
+  dns.lookup(host, async (err, addresses) => {
+    if (err) throw err.message;
+
+    if (!addresses) {
+      res.json({ error_msg: "Invalid URl" });
+    } else {
+      let shortUrl = Math.floor(Math.random() * 100000);
+      const newUrl = new Url({
+        url: urlParser,
+        shorturl: shortUrl,
+      });
+      const data = await newUrl.save();
+      res.json({ original_url: data.url, short_url: data.shorturl });
     }
-  );
+  });
 });
 
 app.get("/api/shorturl/:shortUrl", async (req, res) => {
