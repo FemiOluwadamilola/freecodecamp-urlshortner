@@ -43,8 +43,8 @@ app.post("/api/shorturl", (req, res) => {
         let shortUrl = Math.floor(Math.random() * 100000);
         console.log(shortUrl);
         const url = new Url({ url: bodyurl, shorturl: shortUrl });
-        const savedUrl = url.save();
-        res.json(savedUrl);
+        const data = url.save();
+        res.json({ original_url: data.url, short_url: data.shorturl });
       }
     }
   );
