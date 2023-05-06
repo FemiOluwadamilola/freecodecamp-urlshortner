@@ -55,18 +55,22 @@ app.post("/api/shorturl", (req, res) => {
   const host = urlParser.replace(/http[s]?\:\/\//, "").replace(/\/(.+)?/, "");
 
   dns.lookup(host, async (err, addresses) => {
-    if (err) throw err.message;
+    try {
+      if (err) throw err.message;
 
-    if (!addresses) {
-      res.json({ error_msg: "Invalid URl" });
-    } else {
-      let shortUrl = Math.floor(Math.random() * 100000);
-      const newUrl = new Url({
-        url: urlParser,
-        shorturl: shortUrl,
-      });
-      const data = await newUrl.save();
-      res.json({ original_url: data.url, short_url: data.shorturl });
+      if (!addresses) {
+        res.json({ error_msg: "Invalid URl" });
+      } else {
+        let shortUrl = Math.floor(Math.random() * 100000);
+        const newUrl = new Url({
+          url: urlParser,
+          shorturl: shortUrl,
+        });
+        const data = await newUrl.save();
+        res.json({ original_url: data.url, short_url: data.shorturl });
+      }
+    } catch (err) {
+      console.log(err.message);
     }
   });
 });
